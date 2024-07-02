@@ -1,4 +1,3 @@
-import re
 import tkinter as tk
 from tkinter import filedialog, messagebox
 from datetime import datetime
@@ -33,7 +32,7 @@ def iniciar_analisis(entry_file, entry_inicio, entry_fin, text_widget):
     fecha_inicio_dt = convertir_fecha(fecha_inicio)
     fecha_fin_dt = convertir_fecha(fecha_fin)
     
-    if file_path and fecha_inicio and fecha_fin:
+    if file_path and fecha_inicio and fecha_fin: # Verificar que todos los campos estén completos
         try:
             resultados = analizar_csv(file_path, fecha_inicio_dt, fecha_fin_dt)
             datos_exportacion = resultados  # Almacenar los datos para la exportación
@@ -44,16 +43,17 @@ def iniciar_analisis(entry_file, entry_inicio, entry_fin, text_widget):
         messagebox.showerror("Error", "Por favor, complete todos los campos.")
 
 def procesar_datos_exportacion(texto):
-    lineas = texto.strip().split('\n')
+    lineas = texto.strip().split('\n')  # Dividir el texto en líneas y eliminar espacios en blanco al inicio y final
     datos = []
     
-    for linea in lineas[1:]:  # Omitir la primera línea que es el encabezado
+    for linea in lineas[1:]:  # Recorrer cada línea, omitiendo la primera que es el encabezado
         partes = linea.split(': ')
         if len(partes) == 2:
-            mac_ap, octetos = partes[0], partes[1].replace(' octetos', '')
-            datos.append({'MAC_AP': mac_ap, 'Octetos': int(octetos)})
+            mac_ap, octetos = partes[0], partes[1].replace(' octetos', '')  # Separar la MAC_AP y los octetos
+            datos.append({'MAC_AP': mac_ap, 'Octetos': int(octetos)})  # Agregar los datos a la lista
     
-    return datos
+    return datos  # Devolver los datos procesados como una lista de diccionarios
+
 
 def exportar_a_excel():
     global datos_exportacion
@@ -87,17 +87,18 @@ def exportar_a_excel():
     else:
         messagebox.showerror("Error", "No hay datos disponibles para exportar. Realice el análisis primero.")
 
+# Función principal para configurar y ejecutar la interfaz gráfica
 def main():
-    root = tk.Tk()
-    root.title("Analizador de Tráfico de AP")
-    root.configure(bg="black")
+    root = tk.Tk()  # Crear la ventana principal de la aplicación
+    root.title("Analizador de Tráfico de AP")  # Establecer el título de la ventana
+    root.configure(bg="black")  # Configurar el fondo de la ventana
 
     # Cargar el logo de Excel
-    img = Image.open("excel_logo.png")
-    img = img.resize((40, 40), Image.LANCZOS)
-    excel_logo = ImageTk.PhotoImage(img)
+    img = Image.open("excel_logo.png")  # Abrir la imagen del logo de Excel
+    img = img.resize((40, 40), Image.LANCZOS)  # Redimensionar la imagen
+    excel_logo = ImageTk.PhotoImage(img)  # Crear un objeto ImageTk con la imagen redimensionada
 
-    # Estilos
+    # Estilos para los elementos de la GUI
     entry_style = {"bg": "black", "fg": "white", "insertbackground": "white", "highlightbackground": "green", "highlightcolor": "green", "font": ("Helvetica", 10, "bold")}
     label_style = {"bg": "black", "fg": "white", "font": ("Helvetica", 10, "bold")}
     button_style = {"bg": "green", "fg": "white", "highlightbackground": "green", "highlightcolor": "green", "font": ("Helvetica", 10, "bold"), "bd": 0}
@@ -108,6 +109,7 @@ def main():
         button.bind("<Leave>", lambda e: button.config(relief="solid"))
         button.config(highlightthickness=0, relief="flat", overrelief="flat")
 
+    # Elementos de la interfaz gráfica
     tk.Label(root, text="Archivo CSV:", **label_style).grid(row=0, column=0, padx=10, pady=5)
     entry_file = tk.Entry(root, width=50, **entry_style)
     entry_file.grid(row=0, column=1, padx=10, pady=5)
@@ -131,7 +133,7 @@ def main():
     round_button(btn_analizar)
     btn_analizar.grid(row=3, column=0, columnspan=3, padx=10, pady=20)
 
-    # Agregar logo de Excel encima del botón de exportar
+    # Agregar el logo de Excel encima del botón de exportar
     btn_exportar_logo = tk.Label(root, image=excel_logo, bg="black")
     btn_exportar_logo.image = excel_logo  # Necesario para mantener la referencia
     btn_exportar_logo.grid(row=5, column=0, columnspan=3, padx=10, pady=5)
@@ -140,7 +142,8 @@ def main():
     round_button(btn_exportar)
     btn_exportar.grid(row=6, column=0, columnspan=3, padx=10, pady=10)
 
-    root.mainloop()
+    root.mainloop()  # Ejecutar el bucle principal de la aplicación
 
 if __name__ == "__main__":
-    main()
+    main()  
+

@@ -68,9 +68,9 @@ def analizar_csv(file_path, fecha_inicio, fecha_fin):
             open(archivo_temporal, 'w', newline='', encoding='utf-8') as temporalfile, \
             open(archivo_errores, 'a', newline='', encoding='utf-8') as errfile:  # Abrir en modo 'a' para añadir
 
-        reader = csv.DictReader(csvfile)
-        writer = csv.DictWriter(temporalfile, fieldnames=columnas + ['', ''])
-        error_writer = csv.DictWriter(errfile, fieldnames=columnas + ['', ''])
+        reader = csv.DictReader(csvfile)  # Crear lector de CSV con diccionarios
+        writer = csv.DictWriter(temporalfile, fieldnames=columnas + ['', ''])  # Escritor para archivo temporal
+        error_writer = csv.DictWriter(errfile, fieldnames=columnas + ['', ''])  # Escritor para archivo de errores
 
         writer.writeheader()  # Escribir los encabezados en el archivo temporal
         # No escribimos los encabezados en errores.csv porque ya están escritos
@@ -84,13 +84,15 @@ def analizar_csv(file_path, fecha_inicio, fecha_fin):
                 if not fila_erronea:
                     ap = row['MAC_AP']
                     trafico = int(row['Input_Octects']) + int(row['Output_Octects'])
+                    
+                    # Actualizar el diccionario 'ap_trafico' con el tráfico acumulado por AP
                     if ap in ap_trafico:
                         ap_trafico[ap] += trafico
                     else:
                         ap_trafico[ap] = trafico
 
                     # Crear fila con campos vacíos al final
-                    filtered_row = {k: row[k] for k in columnas if k in row}
+                    filtered_row = {k: row[k] for k in columnas if k in row} #Acomoda las columnas
                     filtered_row.update({'': '', '': ''})
 
                     # Escribir la fila en el archivo temporal
@@ -113,5 +115,3 @@ def analizar_csv(file_path, fecha_inicio, fecha_fin):
         resultado += f"{ap}: {trafico} octetos\n"
     return resultado
 
-if __name__ == "__main__":
-    print(analizar_csv('datos.csv', '2022-01-01', '2022-01-31'))

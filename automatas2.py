@@ -24,7 +24,7 @@ regex_patterns = {
 # Valida un nombre de usuario que puede contener letras, dígitos, guiones bajos, puntos y guiones, con longitud de 1 a 50 caracteres. 
     'Usuario': re.compile(r"^[\w.-][\w.-]{0,49}$"),
     
-# Valida una dirección IP en formato IPv4.
+# Valida una dirección IP en formato IPv4. 192.168.247.11
     'IP_NAS_AP': re.compile(r"^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$"),
 
 # Valida el tipo de conexión como "Wireless-802.11".
@@ -51,9 +51,8 @@ regex_patterns = {
 # Valida un número entero positivo que representa octetos de salida.
     'Output_Octects': re.compile(r"^\d+$"),
     
-# Valida una dirección MAC en formato punto de acceso.
-    'MAC_AP': re.compile(r"^([0-9A-F]{2}-){5}[0-9A-F]{2}:HCDD$"),
-    # Explicación: Valida una dirección MAC de punto de acceso en un formato específico.
+# Valida una dirección MAC en formato punto de acceso. 
+    'MAC_AP': re.compile(r"^([0-9A-F]{2}-){5}[0-9A-F]{2}:HCDD$"), #MAC_AP: 00-00-00-00-00-00:HCDD
 
 # Valida una dirección MAC en formato cliente.
     'MAC_Cliente': re.compile(r"^([0-9A-F]{2}-){5}[0-9A-F]{2}$"),
@@ -81,7 +80,7 @@ def verificar_y_ordenar_fila(row, row_num):
     fila_erronea = False  # Bandera para indicar si la fila contiene errores
     
     for columna in columnas:  # Itera sobre cada columna definida en 'columnas'
-        if columna in row and regex_patterns[columna].match(row[columna]):
+        if columna in row and regex_patterns[columna].match(row[columna]): #match sirve para buscar coincidencias
             # Si la columna está presente en la fila y su valor coincide con la expresión regular correspondiente
             fila_corregida[columna] = row[columna]  # Asigna el valor de la columna corregida
         elif comprobar_columnas(columna, row):
@@ -104,13 +103,15 @@ def analizar_csv(file_path, fecha_inicio, fecha_fin):
     fecha_inicio_dt = datetime.strptime(fecha_inicio, '%Y-%m-%d')
     fecha_fin_dt = datetime.strptime(fecha_fin, '%Y-%m-%d')
 
-    datos_exportar = []  # Lista para almacenar los datos filtrados y corregidos
+    datos_exportar = []  # Lista para almacenar los datos filtrados y corregidos en temporal.csv
 
     # Abrir archivos CSV de entrada, temporal y de errores
+    #encoding=utf-8 es el formato de codificación por defecto y newline='' evita el salto de línea
     with open(file_path, newline='', encoding='utf-8') as csvfile, \
             open(archivo_temporal, 'w', newline='', encoding='utf-8') as temporalfile, \
             open(archivo_errores, 'a', newline='', encoding='utf-8') as errfile:
-
+            #la a sirve para anexar, que no borre el archivo de errores
+            
         reader = csv.DictReader(csvfile)  # Crear lector de CSV con diccionarios
         writer = csv.DictWriter(temporalfile, fieldnames=columnas + ['', ''])  # Escritor para archivo temporal
         error_writer = csv.DictWriter(errfile, fieldnames=columnas + ['', ''])  # Escritor para archivo de errores
@@ -137,7 +138,7 @@ def analizar_csv(file_path, fecha_inicio, fecha_fin):
                         ap_trafico[ap] = trafico
 
                     # Filtrar y preparar la fila para escribirla en el archivo temporal
-                    filtered_row = {k: row[k] for k in columnas if k in row}
+                    filtered_row = {k: row[k] for k in columnas if k in row} #Acomodar las columnas
                     filtered_row.update({'': '', '': ''})  # Agregar campos adicionales (vacíos en este caso)
 
                     writer.writerow(filtered_row)  # Escribir la fila en el archivo temporal
@@ -155,10 +156,8 @@ def analizar_csv(file_path, fecha_inicio, fecha_fin):
     # Preparar el resultado final con un mensaje de análisis completado y los AP con más tráfico
     resultado = "Análisis completado.\n\n"
     resultado += "AP con más tráfico en el rango de fechas especificado:\n"
-    for ap, trafico in sorted(ap_trafico.items(), key=lambda item: item[1], reverse=True):
+    for ap, trafico in sorted(ap_trafico.items(), key=lambda item: item[1], reverse=True): #sorted ordena de mayor a menor
+        #lambda item: item[1] ordena por el segundo elemento de la tupla (trafico)
         resultado += f"{ap}: {trafico} octetos\n"
 
     return resultado  # Retornar el resultado final del análisis
-
-if __name__ == "__main__":
-    print(analizar_csv('datos.csv', '2022-01-01', '2022-01-31'))

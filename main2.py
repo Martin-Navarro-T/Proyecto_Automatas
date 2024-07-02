@@ -1,4 +1,3 @@
-import re  
 import tkinter as tk  
 from tkinter import filedialog, messagebox  
 from datetime import datetime 
@@ -43,8 +42,9 @@ def iniciar_analisis(entry_file, entry_inicio, entry_fin, text_widget):
         messagebox.showerror("Error", "Por favor, complete todos los campos.")  # Mostrar mensaje de error si faltan campos
 
 def procesar_datos_exportacion(texto):
+    #strip para quitar espacios y split para separar por saltos de linea
     lineas = texto.strip().split('\n')  # Dividir el texto en líneas y eliminar espacios en blanco al inicio y final
-    datos = []
+    datos = [] 
     
     for linea in lineas[1:]:  # Recorrer cada línea, omitiendo la primera que es el encabezado
         partes = linea.split(': ')
